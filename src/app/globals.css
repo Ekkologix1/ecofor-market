@@ -1,0 +1,753 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import '../styles/scroll-optimization.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.98 0.005 120);
+  --foreground: oklch(0.15 0.02 120);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 120);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.02 120);
+  --primary: oklch(0.35 0.08 140);
+  --primary-foreground: oklch(0.98 0.005 120);
+  --secondary: oklch(0.92 0.01 120);
+  --secondary-foreground: oklch(0.35 0.08 140);
+  --muted: oklch(0.92 0.01 120);
+  --muted-foreground: oklch(0.5 0.03 120);
+  --accent: oklch(0.92 0.01 120);
+  --accent-foreground: oklch(0.35 0.08 140);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.9 0.01 120);
+  --input: oklch(0.9 0.01 120);
+  --ring: oklch(0.35 0.08 140);
+  --chart-1: oklch(0.35 0.08 140);
+  --chart-2: oklch(0.5 0.06 160);
+  --chart-3: oklch(0.4 0.07 150);
+  --chart-4: oklch(0.45 0.05 130);
+  --chart-5: oklch(0.55 0.04 110);
+  --sidebar: oklch(0.98 0.005 120);
+  --sidebar-foreground: oklch(0.15 0.02 120);
+  --sidebar-primary: oklch(0.35 0.08 140);
+  --sidebar-primary-foreground: oklch(0.98 0.005 120);
+  --sidebar-accent: oklch(0.92 0.01 120);
+  --sidebar-accent-foreground: oklch(0.35 0.08 140);
+  --sidebar-border: oklch(0.9 0.01 120);
+  --sidebar-ring: oklch(0.35 0.08 140);
+}
+
+.dark {
+  --background: oklch(0.12 0.02 120);
+  --foreground: oklch(0.95 0.005 120);
+  --card: oklch(0.18 0.02 120);
+  --card-foreground: oklch(0.95 0.005 120);
+  --popover: oklch(0.18 0.02 120);
+  --popover-foreground: oklch(0.95 0.005 120);
+  --primary: oklch(0.55 0.08 140);
+  --primary-foreground: oklch(0.12 0.02 120);
+  --secondary: oklch(0.25 0.02 120);
+  --secondary-foreground: oklch(0.95 0.005 120);
+  --muted: oklch(0.25 0.02 120);
+  --muted-foreground: oklch(0.65 0.03 120);
+  --accent: oklch(0.25 0.02 120);
+  --accent-foreground: oklch(0.95 0.005 120);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.25 0.02 120);
+  --input: oklch(0.25 0.02 120);
+  --ring: oklch(0.55 0.08 140);
+  --chart-1: oklch(0.55 0.08 140);
+  --chart-2: oklch(0.6 0.06 160);
+  --chart-3: oklch(0.5 0.07 150);
+  --chart-4: oklch(0.45 0.05 130);
+  --chart-5: oklch(0.65 0.04 110);
+  --sidebar: oklch(0.18 0.02 120);
+  --sidebar-foreground: oklch(0.95 0.005 120);
+  --sidebar-primary: oklch(0.55 0.08 140);
+  --sidebar-primary-foreground: oklch(0.12 0.02 120);
+  --sidebar-accent: oklch(0.25 0.02 120);
+  --sidebar-accent-foreground: oklch(0.95 0.005 120);
+  --sidebar-border: oklch(0.25 0.02 120);
+  --sidebar-ring: oklch(0.55 0.08 140);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Animaciones personalizadas para el carrito flotante */
+@keyframes cart-bounce {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-10px);
+  }
+
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes cart-pulse-enhanced {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes cart-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes cart-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), 0 0 30px rgba(16, 185, 129, 0.6);
+  }
+}
+
+@keyframes cart-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-2px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+
+.cart-bounce {
+  animation: cart-bounce 0.6s ease-in-out;
+}
+
+.cart-pulse-enhanced {
+  animation: cart-pulse-enhanced 2s ease-in-out infinite;
+}
+
+.cart-ripple {
+  animation: cart-ripple 0.6s ease-out;
+}
+
+.cart-glow {
+  animation: cart-glow 2s ease-in-out infinite;
+}
+
+.cart-shake {
+  animation: cart-shake 0.5s ease-in-out;
+}
+
+@keyframes progress {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+/* Animaciones optimizadas para notificaciones más fluidas */
+@keyframes progress-smooth {
+  0% {
+    width: 0%;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  50% {
+    transform: scaleX(1);
+  }
+
+  100% {
+    width: 100%;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out 0.1s both;
+}
+
+.transform-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Estilos para prevenir parpadeo del carrito - simplificado */
+html {
+  /* Deshabilitar scroll suave globalmente para evitar parpadeos */
+  scroll-behavior: auto;
+}
+
+/* Prevenir parpadeo de imágenes durante la carga */
+img {
+  /* Evitar que las imágenes parpadeen al cargar */
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Prevenir flash de contenido no estilizado */
+.no-flash {
+  visibility: hidden;
+}
+
+.no-flash.loaded {
+  visibility: visible;
+}
+
+/* Optimizar la carga de imágenes críticas */
+.critical-image {
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+/* Estilos optimizados para modales de confirmación */
+.modal-backdrop {
+  /* Usar transform en lugar de opacity para mejor performance */
+  will-change: opacity;
+}
+
+.modal-content {
+  /* Usar transform en lugar de scale para mejor performance */
+  will-change: transform;
+}
+
+/* Animaciones optimizadas para modales */
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-up {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-animate-in {
+  animation: modal-fade-in 0.2s ease-out;
+}
+
+.modal-animate-in .modal-content {
+  animation: modal-slide-up 0.2s ease-out;
+}
+
+/* Animaciones para toasts */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toast-enter {
+  animation: toast-slide-in 0.3s ease-out;
+}
+
+.toast-exit {
+  animation: toast-slide-out 0.2s ease-in;
+}
+
+/* Estilos para el carrito más ancho */
+.cart-sidebar {
+  /* Asegurar que el carrito no cause scroll horizontal */
+  max-width: min(96rem, 90vw);
+}
+
+/* Mejoras para contenido del carrito */
+.cart-item-content {
+  /* Evitar que el contenido se desborde */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Responsive para el carrito */
+@media (max-width: 640px) {
+  .cart-sidebar {
+    /* En móviles, usar casi todo el ancho de la pantalla */
+    width: 95vw !important;
+    max-width: 95vw !important;
+  }
+}
+
+/* Animaciones para controles de cantidad optimizados */
+.quantity-control {
+  transition: all 0.2s ease-in-out;
+}
+
+.quantity-control:hover {
+  transform: scale(1.05);
+}
+
+.quantity-number {
+  transition: color 0.2s ease-in-out;
+}
+
+.quantity-updating {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Indicador visual para cantidad en actualización */
+.quantity-indicator {
+  position: relative;
+}
+
+.quantity-indicator::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 6px;
+  height: 6px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+/* ========== MICROANIMACIONES MODERNAS ========== */
+
+/* Animación de blob flotante */
+@keyframes blob {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  25% {
+    transform: translate(20px, -20px) scale(1.05);
+  }
+
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+
+  75% {
+    transform: translate(10px, 10px) scale(1.02);
+  }
+}
+
+.animate-blob {
+  animation: blob 20s ease-in-out infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Animación de fade-in desde abajo */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+/* Animación de fade-in desde la izquierda */
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-left {
+  animation: fade-in-left 0.8s ease-out forwards;
+}
+
+/* Animación de fade-in desde la derecha */
+@keyframes fade-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-right {
+  animation: fade-in-right 0.8s ease-out forwards;
+}
+
+/* Animación flotante */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Animación de escala horizontal */
+@keyframes scale-x {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-scale-x {
+  animation: scale-x 1s ease-out 0.5s forwards;
+}
+
+/* Animación de gradiente */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
+/* Optimizaciones de performance para animaciones */
+.transform-gpu,
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* ========== ANIMACIONES PARA CATÁLOGO, LOGIN Y REGISTRO ========== */
+
+/* Fade-in desde arriba */
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.6s ease-out forwards;
+}
+
+/* Slide-in desde abajo */
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.7s ease-out forwards;
+}
+
+/* Contador animado */
+@keyframes counter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-counter {
+  animation: counter 0.5s ease-out forwards;
+}
+
+/* Progress bar */
+@keyframes progress {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: var(--progress-width);
+  }
+}
+
+.animate-progress {
+  animation: progress 1s ease-out forwards;
+}
+
+/* Perspective para efectos 3D */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Delays adicionales para animaciones escalonadas */
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-250 {
+  animation-delay: 250ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+
+.animation-delay-700 {
+  animation-delay: 700ms;
+}
+
+.animation-delay-800 {
+  animation-delay: 800ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+
+.animation-delay-700 {
+  animation-delay: 700ms;
+}
+
+.animation-delay-800 {
+  animation-delay: 800ms;
+}

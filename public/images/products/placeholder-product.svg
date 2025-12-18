@@ -1,0 +1,9 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="8" fill="#F3F4F6"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="7.5" stroke="#D1D5DB"/>
+  <path d="M20 24C20 21.7909 21.7909 20 24 20H40C42.2091 20 44 21.7909 44 24V40C44 42.2091 42.2091 44 40 44H24C21.7909 44 20 42.2091 20 40V24Z" fill="#E5E7EB"/>
+  <path d="M26 28C26 26.8954 26.8954 26 28 26H36C37.1046 26 38 26.8954 38 28V36C38 37.1046 37.1046 38 36 38H28C26.8954 38 26 37.1046 26 36V28Z" fill="#9CA3AF"/>
+  <circle cx="32" cy="30" r="2" fill="#6B7280"/>
+  <path d="M26 34L30 30L34 34L38 30" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="32" y="50" text-anchor="middle" fill="#6B7280" font-family="Arial, sans-serif" font-size="8" font-weight="500">Sin imagen</text>
+</svg>

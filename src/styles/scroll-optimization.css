@@ -1,0 +1,164 @@
+/* Optimizaciones de scroll para mejor rendimiento */
+
+/* Optimizaciones específicas para prevenir parpadeo */
+.image-loading {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.image-loaded {
+  opacity: 1;
+}
+
+/* Estilos específicos para imagen de fondo hero */
+.hero-background {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Evitar parpadeo durante la carga */
+  transition: background-image 0.3s ease-in-out;
+}
+
+/* Prevenir flash de contenido no estilizado en hero */
+.hero-section {
+  min-height: 90vh;
+  /* Color de fondo temporal mientras carga la imagen */
+  background-color: #1f2937;
+}
+
+/* Habilitar hardware acceleration para elementos con transform */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Optimizar elementos con backdrop-blur */
+.backdrop-blur-optimized {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateZ(0);
+}
+
+/* Optimizar animaciones complejas */
+.animation-optimized {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Optimizaciones específicas para scroll fluido */
+.scroll-optimized {
+  /* Forzar capa de composición */
+  transform: translateZ(0);
+  /* Optimizar repaints */
+  backface-visibility: hidden;
+  /* Mejorar rendering */
+  perspective: 1000px;
+}
+
+/* Reducir complejidad de backdrop-blur durante scroll */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-optimized .backdrop-blur-md {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Optimizar elementos con sombras complejas */
+.shadow-optimized {
+  /* Usar box-shadow más simple */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  /* Forzar hardware acceleration */
+  transform: translateZ(0);
+}
+
+/* Optimizaciones para scroll rápido */
+.fast-scroll .backdrop-blur-lg {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.fast-scroll .backdrop-blur-md {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.fast-scroll .backdrop-blur-sm {
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+/* NO aplicar cambios a backdrop-blur-optimized para evitar parpadeo */
+.fast-scroll .backdrop-blur-optimized {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* Reducir animaciones durante scroll - pero NO en elementos críticos */
+.scrolling *:not(.backdrop-blur-optimized):not(.animate-fade-in-up):not(.animate-gradient) {
+  animation-duration: 0.1s !important;
+  transition-duration: 0.1s !important;
+}
+
+/* Optimizar elementos sticky durante scroll */
+.sticky-optimized {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Reducir repaints en hover effects */
+.hover-optimized {
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+.hover-optimized:hover {
+  transform: translateZ(0) translateY(-2px);
+}
+
+/* Optimizar gradientes pesados */
+.gradient-optimized {
+  background-attachment: fixed;
+  background-size: cover;
+  transform: translateZ(0);
+}
+
+/* Smooth scroll optimizado */
+html {
+  scroll-behavior: smooth;
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
+body {
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh;
+}
+
+/* Optimizar elementos con sombras complejas */
+.shadow-optimized {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateZ(0);
+}
+
+/* Lazy loading para elementos pesados */
+.lazy-element {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.lazy-element.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Optimizar elementos con blur */
+.blur-optimized {
+  filter: blur(0);
+  transition: filter 0.3s ease-out;
+}
+
+.blur-optimized:hover {
+  filter: blur(1px);
+}

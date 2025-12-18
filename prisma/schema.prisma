@@ -1,0 +1,505 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  password        String
+  name            String
+  rut             String?     @unique
+  phone           String?
+  type            UserType    @default(NATURAL)
+  role            Role        @default(USER)
+  
+  // Datos empresa (solo si type = EMPRESA)
+  company         String?     // Razón social
+  businessType    String?     // Giro comercial
+  billingAddress  String?     // Dirección facturación
+  shippingAddress String?     // Dirección despacho
+  
+  // Estado validación
+  validated       Boolean     @default(false)
+  validatedAt     DateTime?
+  validatedBy     String?     // ID admin que validó
+  
+  // Soft delete y versioning
+  deletedAt       DateTime?
+  version         Int         @default(1)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relaciones para actividad
+  activityLogs    ActivityLog[]
+  sessionLogs     SessionLog[]
+  
+  // RELACIÓN: Pedidos del usuario
+  orders          Order[]
+  
+  // RELACIÓN: Carrito del usuario
+  cart            Cart?
+  
+  // Índices simples
+  @@index([type])
+  @@index([role])
+  @@index([validated])
+  @@index([createdAt])
+  @@index([deletedAt])
+  
+  // Índices compuestos para queries frecuentes
+  @@index([type, role])                    // Filtros combinados por tipo y rol
+  @@index([validated, type])               // Usuarios validados por tipo
+  @@index([role, deletedAt])               // Usuarios activos por rol
+  @@index([createdAt, type])               // Usuarios por fecha y tipo
+  
+  @@map("users")
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String   // "login", "logout", "create_user", "view_product", "purchase", "order_created", "order_updated"
+  description String?  // Descripción detallada
+  ipAddress   String?
+  metadata    Json?    // Datos adicionales en JSON
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Índices simples
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  
+  // Índices compuestos para queries frecuentes
+  @@index([userId, action])                // Actividad por usuario y acción
+  @@index([action, createdAt])             // Actividad por acción y fecha
+  @@index([userId, createdAt])             // Actividad por usuario y fecha
+  
+  @@map("activity_logs")
+}
+
+model SessionLog {
+  id        String    @id @default(cuid())
+  userId    String
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+  duration  Int?      // Duración en minutos
+  ipAddress String?
+  
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Índices compuestos para análisis de sesiones
+  @@index([userId, startTime])             // Sesiones por usuario y fecha
+  @@index([startTime, endTime])            // Sesiones activas por período
+  
+  @@map("session_logs")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique // Papelería, Químicos, Limpieza, EPP
+  slug        String    @unique // papeleria, quimicos, limpieza, epp
+  description String?
+  image       String?   // URL de imagen de la categoría
+  order       Int       @default(0) // Para ordenar las categorías
+  active      Boolean   @default(true)
+  
+  // Soft delete y versioning
+  deletedAt   DateTime?
+  version     Int       @default(1)
+  
+  products    Product[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Índices simples
+  @@index([active])
+  @@index([order])
+  @@index([deletedAt])
+  
+  // Índices compuestos
+  @@index([active, order])                 // Categorías activas ordenadas
+  
+  @@map("categories")
+}
+
+model Product {
+  id              String      @id @default(cuid())
+  name            String
+  slug            String      @unique
+  description     String?
+  shortDescription String?    // Descripción corta para listados
+  sku             String      @unique // Código del producto
+  
+  // Relación con categoría
+  categoryId      String
+  category        Category    @relation(fields: [categoryId], references: [id])
+  
+  // Precios base (sin descuentos)
+  basePrice       Decimal     @db.Decimal(10,2)
+  wholesalePrice  Decimal?    @db.Decimal(10,2) // Precio mayorista para empresas
+  
+  // Stock e inventario
+  stock           Int         @default(0)
+  minStock        Int         @default(5) // Stock mínimo para alertas
+  maxStock        Int?        // Stock máximo
+  
+  // Información del producto
+  brand           String?     // Marca del producto
+  unit            String      @default("unidad") // unidad, caja, litro, etc.
+  weight          Decimal?    @db.Decimal(8,3) // Peso en kg
+  dimensions      String?     // Dimensiones del producto
+  
+  // Imágenes y multimedia
+  images          String[]    // Array de URLs de imágenes
+  mainImage       String?     // Imagen principal
+  
+  // Estados y configuración
+  active          Boolean     @default(true)
+  featured        Boolean     @default(false) // Producto destacado
+  promotion       Boolean     @default(false) // En promoción
+  promotionPrice  Decimal?    @db.Decimal(10,2) // Precio promocional
+  promotionStart  DateTime?   // Inicio de promoción
+  promotionEnd    DateTime?   // Fin de promoción
+  
+  // SEO y metadata
+  metaTitle       String?
+  metaDescription String?
+  tags            String[]    // Tags para búsqueda
+  
+  // Soft delete y versioning
+  deletedAt       DateTime?
+  version         Int         @default(1)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // RELACIÓN: Items de pedidos
+  orderItems      OrderItem[]
+  
+  // RELACIÓN: Items de carrito
+  cartItems       CartItem[]
+  
+  // Índices simples
+  @@index([categoryId])
+  @@index([active])
+  @@index([featured])
+  @@index([stock])
+  @@index([createdAt])
+  @@index([basePrice])
+  @@index([wholesalePrice])
+  @@index([deletedAt])
+  
+  // Índices compuestos para queries frecuentes
+  @@index([categoryId, active])             // Productos activos por categoría
+  @@index([active, featured])               // Productos destacados activos
+  @@index([active, promotion])              // Productos en promoción activos
+  @@index([categoryId, stock])              // Stock por categoría
+  @@index([basePrice, active])              // Productos activos por precio
+  @@index([featured, active])               // Productos destacados activos
+  @@index([promotion, promotionStart, promotionEnd]) // Promociones activas
+  
+  @@map("products")
+}
+
+model PriceRule {
+  id           String      @id @default(cuid())
+  name         String      @unique
+  userType     UserType?   // NATURAL, EMPRESA o null para todos
+  minQuantity  Int         @default(1) // Cantidad mínima
+  maxQuantity  Int?        // Cantidad máxima (null = sin límite)
+  discountType DiscountType @default(PORCENTAJE)
+  discountValue Decimal    @db.Decimal(5,2) // Porcentaje o valor fijo
+  active       Boolean     @default(true)
+  
+  // Soft delete y versioning
+  deletedAt    DateTime?
+  version      Int         @default(1)
+  
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  
+  // Índices simples
+  @@index([active])
+  @@index([userType])
+  @@index([deletedAt])
+  
+  // Índices compuestos
+  @@index([active, userType])               // Reglas activas por tipo de usuario
+  @@index([active, minQuantity])            // Reglas activas por cantidad mínima
+  
+  @@map("price_rules")
+}
+
+// ============ MODELOS PARA SISTEMA DE CARRITO ============
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  
+  // Soft delete y versioning
+  deletedAt DateTime?
+  version   Int        @default(1)
+  
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  @@index([userId])
+  @@index([deletedAt])
+  
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Decimal  @db.Decimal(10,2)
+  discount  Decimal  @default(0) @db.Decimal(5,2)
+  
+  // Soft delete y versioning
+  deletedAt DateTime?
+  version   Int      @default(1)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([cartId, productId]) // Un producto solo puede estar una vez por carrito
+  
+  // Índices simples
+  @@index([cartId])
+  @@index([productId])
+  @@index([deletedAt])
+  
+  // Índices compuestos
+  @@index([cartId, deletedAt])              // Items activos del carrito
+  
+  @@map("cart_items")
+}
+
+// ============ MODELOS PARA SISTEMA DE PEDIDOS ============
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique // Formato: ECO-2025-001, ECO-2025-002, etc.
+  
+  // Relación con usuario
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Información del pedido
+  status          OrderStatus @default(RECIBIDO)
+  type            OrderType   @default(COMPRA) // COMPRA o COTIZACION
+  
+  // Montos
+  subtotal        Decimal     @db.Decimal(10,2)
+  discountAmount  Decimal     @default(0) @db.Decimal(10,2) // Descuentos aplicados
+  shippingCost    Decimal     @default(0) @db.Decimal(10,2)
+  total           Decimal     @db.Decimal(10,2)
+  
+  // Direcciones y despacho
+  shippingAddress String
+  billingAddress  String?
+  shippingMethod  ShippingMethod @default(RETIRO_TIENDA)
+  shippingCity    String?     // "Concepción", "Chillán", "Los Ángeles"
+  shippingZone    String?     // "Gran Concepción", "Región del Bío-Bío"
+  
+  // Fechas importantes
+  shippingDate    DateTime?   // Fecha programada de despacho
+  deliveredDate   DateTime?   // Fecha de entrega real
+  estimatedDate   DateTime?   // Fecha estimada de entrega
+  
+  // Notas y observaciones
+  customerNotes   String?     // Notas del cliente
+  adminNotes      String?     // Notas internas del admin
+  cancelReason    String?     // Razón de cancelación si aplica
+  
+  // Tracking y seguimiento
+  trackingNumber  String?     // Para courier externos (FedEx, etc.)
+  trackingUrl     String?     // URL de seguimiento externo
+  
+  // Procesamiento y asignación
+  processedBy     String?     // ID del admin que procesó
+  processedAt     DateTime?
+  assignedTo      String?     // ID del vendedor asignado
+  assignedAt      DateTime?
+  
+  // Control de crédito (para empresas)
+  requiresApproval Boolean    @default(false) // Si requiere aprobación por crédito
+  approvedBy      String?     // ID de quien aprobó
+  approvedAt      DateTime?
+  
+  // Soft delete y versioning
+  deletedAt       DateTime?
+  version         Int         @default(1)
+  
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relaciones
+  items           OrderItem[]
+  statusHistory   OrderStatusHistory[]
+  
+  // Índices simples
+  @@index([userId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+  @@index([deletedAt])
+  
+  // Índices compuestos para queries frecuentes
+  @@index([userId, status])                 // Pedidos por usuario y estado
+  @@index([status, createdAt])              // Pedidos por estado y fecha
+  @@index([userId, createdAt])              // Pedidos por usuario y fecha
+  @@index([type, status])                   // Pedidos por tipo y estado
+  @@index([shippingMethod, status])         // Pedidos por método de envío y estado
+  @@index([processedBy, status])            // Pedidos procesados por admin
+  @@index([assignedTo, status])             // Pedidos asignados por vendedor
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  
+  // Relaciones
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  // Información del item al momento de la compra (snapshot)
+  productSku  String   // SKU del producto al momento de la compra
+  productName String   // Nombre del producto al momento de la compra
+  productUnit String   // Unidad del producto (unidad, caja, litro)
+  
+  // Cantidades y precios
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(10,2) // Precio unitario al momento de la compra
+  discount    Decimal  @default(0) @db.Decimal(5,2) // Descuento aplicado (%)
+  subtotal    Decimal  @db.Decimal(10,2) // quantity * unitPrice * (1 - discount/100)
+  
+  // Notas específicas del item
+  notes       String?
+  
+  // Soft delete y versioning
+  deletedAt   DateTime?
+  version     Int      @default(1)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Índices simples
+  @@index([orderId])
+  @@index([productId])
+  @@index([productSku])
+  @@index([deletedAt])
+  
+  // Índices compuestos
+  @@index([orderId, deletedAt])             // Items activos del pedido
+  @@index([productId, orderId])             // Items por producto y pedido
+  
+  @@map("order_items")
+}
+
+model OrderStatusHistory {
+  id          String      @id @default(cuid())
+  
+  // Relación
+  orderId     String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Estado y cambio
+  fromStatus  OrderStatus?    // Estado anterior (null para el primer estado)
+  toStatus    OrderStatus     // Estado nuevo
+  
+  // Información del cambio
+  changedBy   String      // ID del usuario que hizo el cambio
+  changedAt   DateTime    @default(now())
+  reason      String?     // Razón del cambio de estado
+  notes       String?     // Notas adicionales
+  
+  // Metadata del cambio
+  location    String?     // Ubicación donde se hizo el cambio
+  ipAddress   String?     // IP de quien hizo el cambio
+  
+  // Soft delete y versioning
+  deletedAt   DateTime?
+  version     Int         @default(1)
+  
+  // Índices simples
+  @@index([orderId])
+  @@index([changedAt])
+  @@index([deletedAt])
+  
+  // Índices compuestos
+  @@index([orderId, changedAt])             // Historial ordenado por pedido
+  @@index([toStatus, changedAt])            // Cambios por estado y fecha
+  @@index([changedBy, changedAt])           // Cambios por usuario y fecha
+  
+  @@map("order_status_history")
+}
+
+// ============ ENUMS EN ESPAÑOL ============
+
+enum UserType {
+  NATURAL   // Persona natural
+  EMPRESA   // Empresa/Institución
+}
+
+enum Role {
+  USER      // Usuario estándar
+  ADMIN     // Administrador completo
+  VENDEDOR  // Vendedor con permisos limitados
+}
+
+enum DiscountType {
+  PORCENTAJE  // Descuento porcentual
+  FIJO        // Descuento fijo en pesos
+}
+
+enum OrderStatus {
+  // Estados principales del flujo
+  RECIBIDO      // Pedido creado por el cliente
+  VALIDANDO     // Revisando datos y disponibilidad
+  APROBADO      // Pedido aprobado para procesamiento
+  PREPARANDO    // Armando el pedido en bodega
+  LISTO         // Pedido preparado para despacho
+  EN_RUTA       // Despachado, en camino
+  ENTREGADO     // Cliente recibió el pedido
+  
+  // Estados especiales
+  COTIZACION    // Solo para presupuestos
+  CANCELADO     // Pedido cancelado
+  RECHAZADO     // Pedido rechazado (stock, crédito, etc.)
+  EN_ESPERA     // Pausado por algún motivo
+}
+
+enum OrderType {
+  COMPRA        // Compra real
+  COTIZACION    // Cotización/Presupuesto
+}
+
+enum ShippingMethod {
+  RETIRO_TIENDA     // Retiro en tienda
+  DESPACHO_GRATIS   // Despacho gratuito (Gran Concepción, >$35.000)
+  RUTA_PROGRAMADA   // Ruta programada (Chillán jueves, Los Ángeles viernes)
+  COURIER           // Courier externo (FedEx, Starken)
+  DESPACHO_ESPECIAL // Despacho especial
+}
